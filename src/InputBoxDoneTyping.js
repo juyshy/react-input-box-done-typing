@@ -62,7 +62,7 @@ class InputBoxDoneTyping extends Component {
         onKeyUp={(e) => {
           if (e.keyCode == 38 || e.keyCode == 40) {
             let newvalue = this.getStateValue()
-            const step = this.props.step
+            const step = parseFloat( this.props.step)
             if (e.keyCode == 38) {
               newvalue += step
             } else {
