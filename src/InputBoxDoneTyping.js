@@ -40,7 +40,11 @@ class InputBoxDoneTyping extends Component {
 
   render() {
 
-    const { onChange, id, doneTyping,placeholder, step } = this.props
+    const { onChange, id, doneTyping, placeholder , minvalue , maxvalue } = this.props
+    let { step  } = this.props
+    if (step == undefined){
+      step = 1
+    }
     return (
       <input
         type="text"
@@ -62,11 +66,26 @@ class InputBoxDoneTyping extends Component {
         onKeyUp={(e) => {
           if (e.keyCode == 38 || e.keyCode == 40) {
             let newvalue = this.getStateValue()
-            const step = parseFloat( this.props.step)
-            if (e.keyCode == 38) {
-              newvalue += step
+            if (isNaN(newvalue)) {
+              if (e.keyCode == 38) {
+                newvalue = minvalue
+              } else {
+                newvalue = maxvalue
+              }
+
             } else {
-              newvalue -= step
+              step = parseFloat(step)
+              if (e.keyCode == 38) {
+                newvalue += step
+              } else {
+                newvalue -= step
+              }
+              if (newvalue< minvalue) {
+                newvalue=maxvalue
+              }
+              if (newvalue> maxvalue){
+                newvalue=minvalue
+              }
             }
             let precision = 0
             if (step.toString().indexOf(".") != -1) {
@@ -76,10 +95,10 @@ class InputBoxDoneTyping extends Component {
             this.setDisplayValue(newvalue)
             doneTyping(newvalue)
           } else {
-
+            let {doneTypingInterval} = this.props
             clearTimeout(typingTimer)
             const value = e.target.value
-            typingTimer = setTimeout(() => { doneTyping(value) }, this.props.doneTypingInterval)
+            typingTimer = setTimeout(() => { doneTyping(value) }, doneTypingInterval)
           }
         }}
         onKeyDown={e => this.handleOnKeyDown(e)}
