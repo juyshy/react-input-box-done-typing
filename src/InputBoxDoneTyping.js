@@ -73,7 +73,9 @@ class InputBoxDoneTyping extends Component {
                 newvalue = maxvalue
               }
 
-            } else {
+            }
+            
+            else {
               step = parseFloat(step)
               if (e.keyCode == 38) {
                 newvalue += step
@@ -94,7 +96,14 @@ class InputBoxDoneTyping extends Component {
             newvalue = newvalue.toFixed(precision)
             this.setDisplayValue(newvalue)
             doneTyping(newvalue)
-          } else {
+          } 
+          
+          else if (e.keyCode === 27){
+            let newvalue = ""
+            this.setDisplayValue(newvalue)
+            doneTyping(newvalue)
+          } 
+          else {
             let {doneTypingInterval} = this.props
             clearTimeout(typingTimer)
             const value = e.target.value
