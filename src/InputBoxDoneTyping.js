@@ -1,7 +1,7 @@
 
-import React, { PropTypes, Component } from 'react';
+import React, { PropTypes, Component } from 'react'
 
-let typingTimer;
+let typingTimer
 
 class InputBoxDoneTyping extends Component {
 
@@ -15,7 +15,7 @@ class InputBoxDoneTyping extends Component {
     let dispValue = value.toString().replace(".",",")
     this.setState({value: dispValue}) 
   }
-  
+
   componentWillReceiveProps(nextProps){
     const nextValue =  nextProps.value
     if(nextValue != null) {
@@ -24,18 +24,20 @@ class InputBoxDoneTyping extends Component {
   }
 
    doneTyping(value){
-    this.props.doneTyping(value);
-  };
+    this.props.doneTyping(value)
+  }
+ 
 
-   handleOnKeyUp(e){
-    clearTimeout(typingTimer);
-    const value = e.target.value;
-    typingTimer = setTimeout(() => { doneTyping(value); }, this.props.doneTypingInterval);
-  };
+  getStateValue(){
+    let newvalue=this.state.value
+    newvalue = parseFloat(newvalue.replace(",","."))
+    return newvalue
+  }
 
-   handleOnKeyDown()  {
-    clearTimeout(typingTimer);
-  };
+  handleOnKeyDown(e) {
+    clearTimeout(typingTimer)
+  }
+
   render() {
 
     const { onChange, id, doneTyping,placeholder, step } = this.props
@@ -51,18 +53,36 @@ class InputBoxDoneTyping extends Component {
         defaultValue={this.props.defaultValue}
         autoComplete={this.props.autoComplete}
         onChange={e => {
-          const value = e.target.value;
+          const value = e.target.value
           this.setDisplayValue( value) 
           if (onChange) {
-            onChange(value);
+            onChange(value)
           }
         }}
         onKeyUp={(e) => {
-          clearTimeout(typingTimer);
-          const value = e.target.value;
-          typingTimer = setTimeout(() => { doneTyping(value); }, this.props.doneTypingInterval);
+          if (e.keyCode == 38 || e.keyCode == 40) {
+            let newvalue = this.getStateValue()
+            const step = this.props.step
+            if (e.keyCode == 38) {
+              newvalue += step
+            } else {
+              newvalue -= step
+            }
+            let precision = 0
+            if (step.toString().indexOf(".") != -1) {
+              precision = step.toString().split(".")[1].length
+            }
+            newvalue = newvalue.toFixed(precision)
+            this.setDisplayValue(newvalue)
+            doneTyping(newvalue)
+          } else {
+
+            clearTimeout(typingTimer)
+            const value = e.target.value
+            typingTimer = setTimeout(() => { doneTyping(value) }, this.props.doneTypingInterval)
+          }
         }}
-        onKeyDown={this.handleOnKeyDown}
+        onKeyDown={e => this.handleOnKeyDown(e)}
       />
     )
   }
@@ -71,7 +91,7 @@ class InputBoxDoneTyping extends Component {
 InputBoxDoneTyping.defaultProps = {
   autoComplete: 'on',
   doneTypingInterval: 500,
-};
+}
 
 InputBoxDoneTyping.propTypes = {
   id: PropTypes.string,
@@ -84,6 +104,6 @@ InputBoxDoneTyping.propTypes = {
   onChange: PropTypes.func,
   doneTyping: PropTypes.func.isRequired,
   doneTypingInterval: PropTypes.number,
-};
+}
 
-export default InputBoxDoneTyping;
+export default InputBoxDoneTyping
