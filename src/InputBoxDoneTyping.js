@@ -107,10 +107,14 @@ class InputBoxDoneTyping extends Component {
             let {doneTypingInterval} = this.props
             clearTimeout(typingTimer)
             const value = e.target.value
-            if (value.length >= entryLength){
-              doneTypingInterval = 10
+            if (value == ""){
+              doneTyping(value)
             }
-            typingTimer = setTimeout(() => { doneTyping(value) }, doneTypingInterval)
+            if (value.length >= entryLength) {
+              doneTyping(value)
+            } else {
+              typingTimer = setTimeout(() => { doneTyping(value) }, doneTypingInterval)
+            }
           }
         }}
         onKeyDown={e => this.handleOnKeyDown(e)}
