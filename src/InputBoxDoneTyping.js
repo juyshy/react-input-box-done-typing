@@ -11,10 +11,15 @@ class InputBoxDoneTyping extends Component {
 
   }
 
+  setDisplayValue(value){
+    let dispValue = value.toString().replace(".",",")
+    this.setState({value: dispValue}) 
+  }
+  
   componentWillReceiveProps(nextProps){
     const nextValue =  nextProps.value
     if(nextValue != null) {
-      this.setState({value: nextValue}) 
+      this.setDisplayValue( nextValue) 
     }
   }
 
@@ -47,7 +52,7 @@ class InputBoxDoneTyping extends Component {
         autoComplete={this.props.autoComplete}
         onChange={e => {
           const value = e.target.value;
-          this.setState({value: value}) 
+          this.setDisplayValue( value) 
           if (onChange) {
             onChange(value);
           }
