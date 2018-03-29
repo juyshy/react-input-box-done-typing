@@ -1,44 +1,67 @@
-import React, { PropTypes } from 'react';
 
-const InputBoxDoneTyping = (props) => {
-  let typingTimer;
+import React, { PropTypes, Component } from 'react';
 
-  const handleOnChange = (e) => {
-    if (props.onChange) {
-      const value = e.target.value;
-      props.onChange(value);
+let typingTimer;
+
+class InputBoxDoneTyping extends Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {value: ''}
+
+  }
+
+  componentWillReceiveProps(nextProps){
+    const nextValue =  nextProps.value
+    if(nextValue != null) {
+      this.setState({value: nextValue}) 
     }
+  }
+
+   doneTyping(value){
+    this.props.doneTyping(value);
   };
 
-  const doneTyping = (value) => {
-    props.doneTyping(value);
-  };
-
-  const handleOnKeyUp = (e) => {
+   handleOnKeyUp(e){
     clearTimeout(typingTimer);
     const value = e.target.value;
-    typingTimer = setTimeout(() => { doneTyping(value); }, props.doneTypingInterval);
+    typingTimer = setTimeout(() => { doneTyping(value); }, this.props.doneTypingInterval);
   };
 
-  const handleOnKeyDown = () => {
+   handleOnKeyDown()  {
     clearTimeout(typingTimer);
   };
+  render() {
 
-  return (
-    <input
-      type="text"
-      id={props.id}
-      className={props.className}
-      placeholder={props.placeholder}
-      maxLength={props.maxLength}
-      defaultValue={props.defaultValue}
-      autoComplete={props.autoComplete}
-      onChange={handleOnChange}
-      onKeyUp={handleOnKeyUp}
-      onKeyDown={handleOnKeyDown}
+    const { onChange, id, doneTyping,placeholder, step } = this.props
+    return (
+      <input
+        type="text"
+        id={ id}
+        value={this.state.value}
+        //className={this.props.className}
+        placeholder={ placeholder}
+        maxLength={this.props.maxLength}
+        step={step}
+        defaultValue={this.props.defaultValue}
+        autoComplete={this.props.autoComplete}
+        onChange={e => {
+          const value = e.target.value;
+          this.setState({value: value}) 
+          if (onChange) {
+            onChange(value);
+          }
+        }}
+        onKeyUp={(e) => {
+          clearTimeout(typingTimer);
+          const value = e.target.value;
+          typingTimer = setTimeout(() => { doneTyping(value); }, this.props.doneTypingInterval);
+        }}
+        onKeyDown={this.handleOnKeyDown}
       />
-  );
-};
+    )
+  }
+}
 
 InputBoxDoneTyping.defaultProps = {
   autoComplete: 'on',
@@ -50,6 +73,7 @@ InputBoxDoneTyping.propTypes = {
   className: PropTypes.string,
   placeholder: PropTypes.string,
   maxLength: PropTypes.number,
+  value: PropTypes.number,
   defaultValue: PropTypes.string,
   autoComplete: PropTypes.oneOf(['on', 'off']),
   onChange: PropTypes.func,
