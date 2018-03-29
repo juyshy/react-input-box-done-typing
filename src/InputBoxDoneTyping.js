@@ -40,7 +40,7 @@ class InputBoxDoneTyping extends Component {
 
   render() {
 
-    const { onChange, id, doneTyping, placeholder , minvalue , maxvalue } = this.props
+    const { onChange, id, doneTyping, placeholder , minvalue , maxvalue,entryLength } = this.props
     let { step  } = this.props
     if (step == undefined){
       step = 1
@@ -98,6 +98,9 @@ class InputBoxDoneTyping extends Component {
             let {doneTypingInterval} = this.props
             clearTimeout(typingTimer)
             const value = e.target.value
+            if (value.length >= entryLength){
+              doneTypingInterval = 10
+            }
             typingTimer = setTimeout(() => { doneTyping(value) }, doneTypingInterval)
           }
         }}
