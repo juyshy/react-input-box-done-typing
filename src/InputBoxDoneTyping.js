@@ -38,9 +38,69 @@ class InputBoxDoneTyping extends Component {
     clearTimeout(typingTimer)
   }
 
+  handleOnKeyUp(e) {
+    const { doneTyping, minvalue, maxvalue, entryLength } = this.props
+    let { step } = this.props
+    if (step == undefined) {
+      step = 1
+    }
+    if (e.keyCode == 38 || e.keyCode == 40) {
+      let newvalue = this.getStateValue()
+      if (isNaN(newvalue)) {
+        if (e.keyCode == 38) {
+          newvalue = minvalue
+        } else {
+          newvalue = maxvalue
+        }
+
+      }
+      
+      else {
+        step = parseFloat(step)
+        if (e.keyCode == 38) {
+          newvalue += step
+        } else {
+          newvalue -= step
+        }
+        if (newvalue< minvalue) {
+          newvalue=maxvalue
+        }
+        if (newvalue> maxvalue){
+          newvalue=minvalue
+        }
+      }
+      let precision = 0
+      if (step.toString().indexOf(".") != -1) {
+        precision = step.toString().split(".")[1].length
+      }
+      newvalue = newvalue.toFixed(precision)
+      this.setDisplayValue(newvalue)
+      doneTyping(newvalue)
+    } 
+    
+    else if (e.keyCode === 27){
+      let newvalue = ""
+      this.setDisplayValue(newvalue)
+      doneTyping(newvalue)
+    } 
+    else {
+      let {doneTypingInterval} = this.props
+      clearTimeout(typingTimer)
+      const value = e.target.value
+      if (value == ""){
+        doneTyping(value)
+      }
+      if (value.length >= entryLength) {
+        doneTyping(value)
+      } else {
+        typingTimer = setTimeout(() => { doneTyping(value) }, doneTypingInterval)
+      }
+    }
+  }
+
   render() {
 
-    const { onChange, id, doneTyping, placeholder , minvalue , maxvalue,entryLength } = this.props
+    const { onChange, id, placeholder  } = this.props
     let { step  } = this.props
     if (step == undefined){
       step = 1
@@ -63,60 +123,7 @@ class InputBoxDoneTyping extends Component {
             onChange(value)
           }
         }}
-        onKeyUp={(e) => {
-          if (e.keyCode == 38 || e.keyCode == 40) {
-            let newvalue = this.getStateValue()
-            if (isNaN(newvalue)) {
-              if (e.keyCode == 38) {
-                newvalue = minvalue
-              } else {
-                newvalue = maxvalue
-              }
-
-            }
-            
-            else {
-              step = parseFloat(step)
-              if (e.keyCode == 38) {
-                newvalue += step
-              } else {
-                newvalue -= step
-              }
-              if (newvalue< minvalue) {
-                newvalue=maxvalue
-              }
-              if (newvalue> maxvalue){
-                newvalue=minvalue
-              }
-            }
-            let precision = 0
-            if (step.toString().indexOf(".") != -1) {
-              precision = step.toString().split(".")[1].length
-            }
-            newvalue = newvalue.toFixed(precision)
-            this.setDisplayValue(newvalue)
-            doneTyping(newvalue)
-          } 
-          
-          else if (e.keyCode === 27){
-            let newvalue = ""
-            this.setDisplayValue(newvalue)
-            doneTyping(newvalue)
-          } 
-          else {
-            let {doneTypingInterval} = this.props
-            clearTimeout(typingTimer)
-            const value = e.target.value
-            if (value == ""){
-              doneTyping(value)
-            }
-            if (value.length >= entryLength) {
-              doneTyping(value)
-            } else {
-              typingTimer = setTimeout(() => { doneTyping(value) }, doneTypingInterval)
-            }
-          }
-        }}
+        onKeyUp={e => this.handleOnKeyUp(e)}
         onKeyDown={e => this.handleOnKeyDown(e)}
       />
     )
